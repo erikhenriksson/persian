@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import re
 from collections import Counter
 
@@ -26,6 +27,15 @@ from transformers import (
     Trainer,
     TrainingArguments,
 )
+
+# Set seed for reproducibility
+SEED = 42
+torch.manual_seed(SEED)
+np.random.seed(SEED)
+random.seed(SEED)
+torch.cuda.manual_seed_all(SEED)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 # Define valid labels structure
 labels_structure = {
@@ -162,17 +172,21 @@ test_dataset = MultiLabelDataset(X_test, y_test, tokenizer)
 # Training arguments
 training_args = TrainingArguments(
     output_dir="./results",
-    num_train_epochs=3,
+    num_train_epochs=5,  # Increased from 3
     per_device_train_batch_size=8,
     per_device_eval_batch_size=16,
     learning_rate=2e-5,
+    weight_decay=0.01,
+    warmup_ratio=0.1,
     eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
     metric_for_best_model="f1",
     greater_is_better=True,
     bf16=True,
+    logging_steps=50,
     report_to="none",
+    seed=SEED,
 )
 
 
