@@ -297,7 +297,7 @@ training_args = TrainingArguments(
     num_train_epochs=10,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=8,
-    learning_rate=5e-5,
+    learning_rate=3e-5,
     eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
@@ -326,8 +326,8 @@ trainer = MultiLabelTrainer(
     compute_metrics=compute_metrics,
     callbacks=[early_stopping],
     label_smoothing=0,
-    focal_alpha=0.5,
-    focal_gamma=1,
+    focal_alpha=1,
+    focal_gamma=2,
 )
 
 print("\n" + "=" * 60)
