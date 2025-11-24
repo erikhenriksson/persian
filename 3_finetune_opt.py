@@ -294,10 +294,10 @@ def compute_metrics(p):
 # Training arguments
 training_args = TrainingArguments(
     output_dir="./results",
-    num_train_epochs=10,
+    num_train_epochs=15,
     per_device_train_batch_size=4,
     per_device_eval_batch_size=8,
-    learning_rate=3e-5,
+    learning_rate=1e-5,
     eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
@@ -327,7 +327,7 @@ trainer = MultiLabelTrainer(
     callbacks=[early_stopping],
     label_smoothing=0,
     focal_alpha=1,
-    focal_gamma=2,
+    focal_gamma=1,
 )
 
 print("\n" + "=" * 60)
