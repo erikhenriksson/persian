@@ -325,7 +325,7 @@ trainer = MultiLabelTrainer(
     eval_dataset=dev_dataset,
     compute_metrics=compute_metrics,
     callbacks=[early_stopping],
-    label_smoothing=0.1,
+    label_smoothing=0,
     focal_alpha=0.5,
     focal_gamma=1,
 )
