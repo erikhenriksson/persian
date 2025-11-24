@@ -27,6 +27,11 @@ from transformers import (
     TrainingArguments,
 )
 
+# ========== PERFORMANCE OPTIMIZATIONS ==========
+torch.set_float32_matmul_precision("high")
+print("Set matmul precision to 'high' for TF32 acceleration")
+# ================================================
+
 # Define valid labels structure
 labels_structure = {
     "MT": [],
@@ -125,7 +130,6 @@ model = AutoModelForSequenceClassification.from_pretrained(
     model_name,
     num_labels=len(all_valid_labels),
     problem_type="multi_label_classification",
-    # torch_dtype=torch.bfloat16,
 )
 print("Model loaded for multi-label classification")
 
@@ -165,13 +169,13 @@ training_args = TrainingArguments(
     num_train_epochs=3,
     per_device_train_batch_size=8,
     per_device_eval_batch_size=16,
-    learning_rate=2e-5,
+    learning_rate=2e-4,
     eval_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
     metric_for_best_model="f1",
     greater_is_better=True,
-    # bf16=True,
+    tf32=True if torch.cuda.is_available() else False,
     report_to="none",
 )
 
