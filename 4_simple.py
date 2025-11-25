@@ -3,7 +3,6 @@ import os
 
 # Set cache directories to local
 os.environ["HF_HOME"] = "./model_cache"
-os.makedirs("./model_cache", exist_ok=True)
 
 import numpy as np
 import torch
@@ -44,14 +43,14 @@ all_valid_labels = sorted(
 
 
 def load_jsonl_data(filepath):
-    """Load JSONL file and return texts and label vectors"""
+    """Load JSONL file and return texts and label vectors as numpy arrays"""
     texts = []
     labels = []
 
     with open(filepath, "r", encoding="utf-8") as f:
         for line in f:
             record = json.loads(line)
-            texts.append(record["text"])
+            texts.append([record["text"]])
 
             # Convert space-separated labels to binary vector
             label_list = record["label"].split()
@@ -60,27 +59,25 @@ def load_jsonl_data(filepath):
             ]
             labels.append(binary_vector)
 
-    return texts, labels
+    X = np.array(texts)
+    y = np.array(labels, dtype=np.float32)
+    return X, y
 
 
 # Load data
-texts, labels = load_jsonl_data("data/persian_consolidated.jsonl")
-print(f"Loaded {len(texts)} documents")
+X, y = load_jsonl_data("data/persian_consolidated.jsonl")
+print(f"Loaded {len(X)} documents")
 
 # Check label distribution
 label_counts = {label: 0 for label in all_valid_labels}
-for label_vec in labels:
+for label_vec in y:
     for i, val in enumerate(label_vec):
-        if val == 1:
+        if val == 1.0:
             label_counts[all_valid_labels[i]] += 1
 
 print("\nLabel distribution:")
 for label in all_valid_labels:
     print(f"  {label}: {label_counts[label]:,}")
-
-# Prepare data for stratification
-X = np.array(texts).reshape(-1, 1)  # 2D array required by iterative_train_test_split
-y = np.array(labels)
 
 # Multi-label stratified split: train=70%, temp=30%
 X_train, y_train, X_temp, y_temp = iterative_train_test_split(X, y, test_size=0.3)
@@ -165,8 +162,6 @@ def compute_metrics(p):
         true_labels,
         binary_predictions,
         target_names=all_valid_labels,
-        digits=4,
-        zero_division=0,
         output_dict=True,
     )
 
@@ -177,8 +172,6 @@ def compute_metrics(p):
             true_labels,
             binary_predictions,
             target_names=all_valid_labels,
-            digits=4,
-            zero_division=0,
         )
     )
     print("=" * 60)
