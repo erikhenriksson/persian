@@ -216,33 +216,28 @@ trainer.train()
 
 # Evaluate on test set
 print("\n" + "=" * 60)
-print("FINAL EVALUATION ON TEST SET")
+print("Test set results:")
 print("=" * 60)
 
-# Use trainer.predict which will call compute_metrics automatically
 test_results = trainer.predict(test_dataset)
 test_metrics = test_results.metrics
 
-# Save model
+# Save model with label mappings
 print("\n" + "=" * 60)
 print("Saving model to ./persian_register_model")
 print("=" * 60)
+
+# Add label mappings to model config
+model.config.label2id = {label: i for i, label in enumerate(all_valid_labels)}
+model.config.id2label = {i: label for i, label in enumerate(all_valid_labels)}
+
 trainer.save_model("./persian_register_model")
 tokenizer.save_pretrained("./persian_register_model")
 
-# Save label mapping and results
-with open("./persian_register_model/label_mapping.json", "w") as f:
-    json.dump({"labels": all_valid_labels}, f, indent=2)
-
-results = {
-    "test_f1_micro": float(test_metrics["test_f1_micro"]),
-    "test_f1_macro": float(test_metrics["test_f1_macro"]),
-    "test_precision_micro": float(test_metrics["test_precision_micro"]),
-    "test_recall_micro": float(test_metrics["test_recall_micro"]),
-    "optimal_threshold": float(test_metrics["test_threshold"]),
-}
-
+# Save test results
 with open("./persian_register_model/test_results.json", "w") as f:
-    json.dump(results, f, indent=2)
+    json.dump(
+        {k.replace("test_", ""): float(v) for k, v in test_metrics.items()}, f, indent=2
+    )
 
 print("Done!")
