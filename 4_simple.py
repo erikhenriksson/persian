@@ -204,6 +204,9 @@ training_args = TrainingArguments(
     tf32=True,
     save_total_limit=2,
     seed=42,
+    eval_strategy="epoch",
+    save_strategy="epoch",
+    logging_strategy="epoch",
 )
 
 # Initialize standard Trainer
