@@ -31,13 +31,13 @@ def consolidate_labels(group):
     all_labels = set()
 
     for val in group["Turku_NLP"]:
-        if val and val != "":  # Check for empty strings instead of NaN
+        if val and val != "":  # Check for empty strings
             # Split by semicolon and clean
             labels = [label.strip() for label in str(val).split(";")]
             all_labels.update(labels)
 
     for val in group["Turku_NLP_sub"]:
-        if val and val != "":  # Check for empty strings instead of NaN
+        if val and val != "":  # Check for empty strings
             # Split by semicolon and clean
             labels = [label.strip() for label in str(val).split(";")]
             all_labels.update(labels)
@@ -56,16 +56,8 @@ def consolidate_labels(group):
     return " ".join(all_labels)
 
 
-# Group by ID and consolidate
-consolidated = (
-    df.groupby("id")
-    .agg(
-        {
-            "text": "first",  # Take the first text (they should all be the same)
-        }
-    )
-    .reset_index()
-)
+# Select only the relevant columns and drop duplicates based on 'id'
+consolidated = df[["id", "text"]].drop_duplicates(subset=["id"], keep="first")
 
 # Add the consolidated label column
 consolidated["label"] = df.groupby("id").apply(consolidate_labels).values

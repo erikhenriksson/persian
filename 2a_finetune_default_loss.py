@@ -1,7 +1,7 @@
 import json
 import os
 
-os.environ["HF_HOME"] = "./model_cache"
+os.environ["HF_HOME"] = "./hf_home"
 
 import numpy as np
 import torch
@@ -19,7 +19,7 @@ from transformers import (
 
 torch.manual_seed(42)
 np.random.seed(42)
-print("hello")
+
 labels_structure = {
     "MT": [],
     "LY": [],
@@ -47,7 +47,7 @@ def load_jsonl_data(filepath):
             label_list = record["label"].split()
             binary_vector = [
                 1.0 if label in label_list else 0.0 for label in all_valid_labels
-            ]
+            ] # Note: these are floats for compatibility with Trainer
             labels.append(binary_vector)
     return np.array(texts), np.array(labels, dtype=np.float32)
 
