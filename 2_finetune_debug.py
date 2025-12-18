@@ -267,20 +267,26 @@ print(f"Mean text length: {np.mean([len(text) for text in X]):.0f} chars")
 print(f"Median text length: {np.median([len(text) for text in X]):.0f} chars")
 print()
 
+# Store raw labels mapping before reshaping
+text_to_labels = {text: raw_labels[i] for i, text in enumerate(X)}
+
 # Split data
-X_train, y_train, X_temp, y_temp = iterative_train_test_split(X, y, test_size=0.3)
+# iterative_train_test_split requires 2D arrays
+X_reshaped = X.reshape(-1, 1)
+X_train, y_train, X_temp, y_temp = iterative_train_test_split(
+    X_reshaped, y, test_size=0.3
+)
 X_dev, y_dev, X_test, y_test = iterative_train_test_split(X_temp, y_temp, test_size=0.5)
 
-# Get corresponding raw labels for splits
-train_indices = [i for i in range(len(X)) if X[i] in X_train][: len(X_train)]
-dev_indices = [i for i in range(len(X)) if X[i] in X_temp][: len(X_dev)]
-test_indices = [i for i in range(len(X)) if X[i] in X_temp][
-    len(X_dev) : len(X_dev) + len(X_test)
-]
+# Flatten X arrays back to 1D
+X_train = X_train.flatten()
+X_dev = X_dev.flatten()
+X_test = X_test.flatten()
 
-train_raw_labels = [raw_labels[i] for i in train_indices]
-dev_raw_labels = [raw_labels[i] for i in dev_indices]
-test_raw_labels = [raw_labels[i] for i in test_indices]
+# Get corresponding raw labels for splits by matching texts
+train_raw_labels = [text_to_labels[text] for text in X_train]
+dev_raw_labels = [text_to_labels[text] for text in X_dev]
+test_raw_labels = [text_to_labels[text] for text in X_test]
 
 analyze_label_distribution(y_train, train_raw_labels, "TRAIN SET")
 analyze_label_distribution(y_dev, dev_raw_labels, "DEV SET")
