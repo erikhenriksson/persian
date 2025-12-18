@@ -17,8 +17,8 @@ from transformers import (
     TrainingArguments,
 )
 
-torch.manual_seed(42)
-np.random.seed(42)
+torch.manual_seed(43)
+np.random.seed(43)
 
 labels_structure = {
     "MT": [],
@@ -146,7 +146,7 @@ trainer = Trainer(
         num_train_epochs=15,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=16,
-        learning_rate=1e-8,
+        learning_rate=1e-6,
         eval_strategy="epoch",
         save_strategy="epoch",
         logging_strategy="epoch",
