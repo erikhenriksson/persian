@@ -126,7 +126,7 @@ model = AutoModelForSequenceClassification.from_pretrained(
 # Tokenize
 def tokenize_function(examples):
     return tokenizer(
-        examples["text"], truncation=True, max_length=4096, padding="max_length"
+        examples["text"], truncation=True, max_length=2048, padding="max_length"
     )
 
 
