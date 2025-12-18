@@ -58,11 +58,11 @@ def load_jsonl_data(filepath):
             raw_labels_list.append(label_list)
 
             binary_vector = [
-                1 if label in label_list else 0 for label in all_valid_labels
-            ]  # Changed to int
+                1.0 if label in label_list else 0.0 for label in all_valid_labels
+            ]  # Must be float for BCEWithLogitsLoss
             labels.append(binary_vector)
 
-    return np.array(texts), np.array(labels, dtype=np.int32), raw_labels_list
+    return np.array(texts), np.array(labels, dtype=np.float32), raw_labels_list
 
 
 def analyze_label_distribution(y, raw_labels, split_name=""):
